@@ -41,17 +41,22 @@ const VIDEOS = [
 export default function App() {
   const [playingVideo, setPlayingVideo] = useState<typeof VIDEOS[0] | null>(null);
   const [showSplash, setShowSplash] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false);
 
   React.useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 2500);
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+      setShowWelcome(true);
+    }, 2500);
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <div className="h-screen flex flex-col bg-zinc-950 text-white font-sans selection:bg-white selection:text-black">
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {showSplash && (
           <motion.div
+            key="splash"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
@@ -107,6 +112,70 @@ export default function App() {
             </div>
           </motion.div>
         )}
+
+        {showWelcome && (
+          <motion.div
+            key="welcome"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[90] bg-[#F5F5F5] flex flex-col items-center justify-center p-6 text-black"
+          >
+            <div className="max-w-md w-full flex flex-col items-center">
+              <motion.div
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="flex flex-col items-center mb-12"
+              >
+                {/* Logo Re-use for Welcome Page */}
+                <div className="relative mb-2 scale-75 md:scale-100">
+                  <h1 
+                    className="text-[120px] font-black leading-none tracking-tighter text-[#B89E67] drop-shadow-[4px_4px_0px_rgba(0,0,0,1)]"
+                    style={{ fontFamily: "'Anton', sans-serif", WebkitTextStroke: "2px black" }}
+                  >
+                    ABS
+                  </h1>
+                </div>
+                <div className="bg-black px-6 py-3 mt-[-20px] z-10">
+                  <h2 className="text-white text-2xl font-black uppercase tracking-tight leading-none">
+                    POWERLIFTING
+                  </h2>
+                  <h2 className="text-white text-3xl font-black uppercase tracking-tight leading-none mt-1">
+                    SERIES
+                  </h2>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-center space-y-6"
+              >
+                <h3 className="text-4xl font-black uppercase tracking-tighter leading-none">
+                  WELCOME TO THE <span className="text-[#B89E67]">ELITE</span>
+                </h3>
+                <p className="text-zinc-600 font-bold uppercase text-sm tracking-wide">
+                  Access exclusive training content, world records, and the strongest community on earth.
+                </p>
+                
+                <button
+                  onClick={() => setShowWelcome(false)}
+                  className="w-full bg-black text-white py-6 text-2xl font-black uppercase tracking-widest hover:bg-[#B89E67] transition-colors shadow-[8px_8px_0px_0px_rgba(184,158,103,1)] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                >
+                  GET STARTED
+                </button>
+              </motion.div>
+
+              <div className="mt-12 flex items-center gap-4 opacity-50">
+                <div className="h-px w-12 bg-black"></div>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Lift Pass Required</span>
+                <div className="h-px w-12 bg-black"></div>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {/* Header */}
@@ -139,8 +208,8 @@ export default function App() {
       </header>
 
       {/* Video List */}
-      <main className="flex-1 overflow-y-auto px-6 py-12 pb-32">
-        <div className="max-w-md mx-auto space-y-12">
+      <main className="flex-1 overflow-y-auto px-6 py-8 pb-32">
+        <div className="max-w-sm mx-auto space-y-8">
           {VIDEOS.map((video, index) => (
             <VideoCard key={video.id} video={video} index={index} onPlay={() => setPlayingVideo(video)} />
           ))}
@@ -181,50 +250,50 @@ function VideoCard({ video, index, onPlay }: { video: typeof VIDEOS[0], index: n
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.15, type: "spring", stiffness: 100 }}
-      className={`relative rounded-2xl border-4 border-white overflow-hidden ${video.color} text-black shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-transform hover:-translate-y-2 hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] flex flex-col`}
+      className={`relative rounded-xl border-2 md:border-3 border-white overflow-hidden ${video.color} text-black shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] md:shadow-[5px_5px_0px_0px_rgba(255,255,255,1)] transition-transform hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] flex flex-col`}
     >
       {/* Card Header */}
-      <div className="p-6 border-b-4 border-black flex justify-between items-center gap-4">
+      <div className="p-3 md:p-4 border-b-2 md:border-b-3 border-black flex justify-between items-center gap-3">
         <div className="flex-1">
           <h2 
-            className="text-4xl font-black uppercase tracking-tight leading-none"
+            className="text-lg md:text-2xl font-black uppercase tracking-tight leading-none"
             style={{ fontFamily: "'Anton', sans-serif" }}
           >
             {video.title}
           </h2>
         </div>
-        <div className="p-3 bg-black text-white rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] transform -rotate-3">
-          {video.icon}
+        <div className="p-1.5 md:p-2 bg-black text-white rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] transform -rotate-3">
+          {React.cloneElement(video.icon as React.ReactElement, { className: "w-5 h-5 md:w-6 md:h-6" })}
         </div>
       </div>
 
       {/* Video Container */}
-      <div className="relative aspect-video bg-black border-b-4 border-black w-full">
+      <div className="relative aspect-video bg-black border-b-2 md:border-b-3 border-black w-full">
         <div 
           className="absolute inset-0 flex items-center justify-center bg-zinc-900 group cursor-pointer overflow-hidden" 
           onClick={onPlay}
         >
           {/* Fake Thumbnail Pattern */}
-          <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
+          <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 1.5px 1.5px, white 1px, transparent 0)', backgroundSize: '16px 16px' }}></div>
           
           {/* Play Button */}
-          <div className="relative z-10 w-24 h-24 bg-[#E4FF00] rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:bg-white text-black shadow-[0_0_30px_rgba(228,255,0,0.5)]">
-            <Play className="w-12 h-12 ml-2" fill="currentColor" />
+          <div className="relative z-10 w-12 h-12 md:w-16 md:h-16 bg-[#E4FF00] rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:bg-white text-black shadow-[0_0_20px_rgba(228,255,0,0.4)]">
+            <Play className="w-6 h-6 md:w-8 md:h-8 ml-1" fill="currentColor" />
           </div>
           
-          <div className="absolute bottom-4 left-4 bg-black text-white px-4 py-2 text-xs font-black uppercase tracking-widest border-2 border-white">
+          <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 bg-black text-white px-2 py-1 text-[8px] md:text-[10px] font-black uppercase tracking-widest border-2 border-white">
             Tap to Play
           </div>
         </div>
       </div>
       
       {/* Card Footer */}
-      <div className="p-4 bg-black text-white flex justify-between items-center">
-        <span className="font-black text-lg tracking-widest uppercase" style={{ fontFamily: "'Anton', sans-serif" }}>
+      <div className="p-2 md:p-3 bg-black text-white flex justify-between items-center">
+        <span className="font-black text-sm md:text-base tracking-widest uppercase" style={{ fontFamily: "'Anton', sans-serif" }}>
           Vol. 0{index + 1}
         </span>
-        <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider hover:text-[#E4FF00] transition-colors">
-          <Share2 className="w-4 h-4" />
+        <button className="flex items-center gap-2 text-[8px] md:text-[10px] font-bold uppercase tracking-wider hover:text-[#E4FF00] transition-colors">
+          <Share2 className="w-3 h-3" />
           Share
         </button>
       </div>
