@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Play, Dumbbell, Trophy, Flame, Zap, Share2, X } from 'lucide-react';
+import { Play, Dumbbell, Trophy, Flame, Zap, Share2, X, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const VIDEOS = [
@@ -181,14 +181,27 @@ export default function App() {
       {/* Header */}
       <header className="pt-6 pb-4 px-6 border-b-4 border-zinc-800 bg-zinc-900 shrink-0 z-10 shadow-2xl relative">
         <div className="max-w-md mx-auto">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", bounce: 0.5 }}
-            className="inline-block bg-[#E4FF00] text-black px-2 py-0.5 text-[10px] font-black uppercase tracking-widest mb-2 rounded-sm"
-          >
-            Official App
-          </motion.div>
+          <div className="flex justify-between items-start mb-4">
+            <motion.button
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              onClick={() => setShowWelcome(true)}
+              className="px-3 py-1.5 bg-zinc-800 text-[#E4FF00] hover:bg-zinc-700 rounded border border-zinc-700 transition-colors flex items-center gap-2 group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Back</span>
+            </motion.button>
+            
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", bounce: 0.5 }}
+              className="inline-block bg-[#E4FF00] text-black px-2 py-0.5 text-[10px] font-black uppercase tracking-widest rounded-sm"
+            >
+              Official App
+            </motion.div>
+          </div>
+          
           <motion.h1 
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -211,7 +224,9 @@ export default function App() {
       <main className="flex-1 overflow-y-auto px-6 py-8 pb-32">
         <div className="max-w-sm mx-auto space-y-8">
           {VIDEOS.map((video, index) => (
-            <VideoCard key={video.id} video={video} index={index} onPlay={() => setPlayingVideo(video)} />
+            <div key={video.id}>
+              <VideoCard video={video} index={index} onPlay={() => setPlayingVideo(video)} />
+            </div>
           ))}
         </div>
       </main>
@@ -244,7 +259,7 @@ export default function App() {
   );
 }
 
-function VideoCard({ video, index, onPlay }: { video: typeof VIDEOS[0], index: number, onPlay: () => void }) {
+function VideoCard({ video, index, onPlay }: { video: typeof VIDEOS[0]; index: number; onPlay: () => void }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -263,7 +278,7 @@ function VideoCard({ video, index, onPlay }: { video: typeof VIDEOS[0], index: n
           </h2>
         </div>
         <div className="p-1.5 md:p-2 bg-black text-white rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] transform -rotate-3">
-          {React.cloneElement(video.icon as React.ReactElement, { className: "w-5 h-5 md:w-6 md:h-6" })}
+          {video.icon}
         </div>
       </div>
 
